@@ -1,25 +1,27 @@
 import { Request, Response } from 'express'
-import { CustomError } from '../Models/CustomError';
+import { CustomError } from '../Models/CustomError'
+import { UserBusiness } from '../Business/userBusiness'
 
 export class UserController {
-    
-    getUser = async (req:Request, res:Response) => {
+
+    constructor(
+        private userBusiness: UserBusiness
+    ){}
+
+    createUser = async (req:Request, res:Response) => {
         try {
+            const { email, childName, parentName, age, birthDate, phoneNumber } = req.body
 
-            let users = []
+            const token =  await this.userBusiness.createUser( childName, parentName, age, birthDate, phoneNumber, email)
 
-            if(req.query){
-                
-            }
-
-            const { childName, age, parentName, phoneNumber } = req.query
-
-        } catch (error:any) {
-            if (error instanceof CustomError) {
-				res.status(error.statusCode).send(error.message);
-			} else {
-				res.status(404).send(error.message);
-			}
-        }
+            res.status(201).send({token: token, message: 'Usuário criado com sucesso!'})
+            
+        }catch (error:any) {
+             if (error instanceof CustomError) {
+	 			res.status(error.statusCode).send(error.message)
+	 		} else {
+	 			res.status(404).send(error.message)
+	 		}
+         }
     }
 }

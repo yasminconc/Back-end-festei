@@ -1,5 +1,6 @@
 import cors from 'cors'
 import express, { Express } from 'express'
+import { userRouter } from './Router/UserRouter'
 
 
 const port: number = 3000
@@ -18,3 +19,5 @@ const server = app.listen(port, () => {
 })
 
 // Route
+
+app.use(userRouter)
