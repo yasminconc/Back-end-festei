@@ -24,4 +24,34 @@ export class UserController {
 	 		}
          }
     }
+
+    getUser = async (req: Request, res:Response) => {
+        try {
+            const {word } = req.query 
+            
+            const response = await this.userBusiness.getUsers(word) 
+
+            res.status(200).send(response)
+            
+        } catch (error:any) {
+            if (error instanceof CustomError) {
+	 			res.status(error.statusCode).send(error.message)
+	 		} else {
+	 			res.status(404).send(error.message)
+	 		}
+        }
+    }
+
+    editUser = async (req: Request, res: Response) => {
+        try {
+            
+            
+        } catch (error:any) {
+             if (error instanceof CustomError) {
+	 			res.status(error.statusCode).send(error.message)
+	 		} else {
+	 			res.status(404).send(error.message)
+	 		}
+        }
+    }
 }
