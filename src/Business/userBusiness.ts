@@ -1,8 +1,7 @@
-import { UserData } from "../Data/UserData";
-import { CustomError } from "../Models/CustomError";
-import { IdGenerator } from "../Services/IdGenerator";
-import { TokenManager } from "../Services/TokenManager";
-// import {User} from '@prisma/client'
+import { UserData } from '../Data/UserData'
+import { CustomError } from '../Models/CustomError'
+import { IdGenerator } from '../Services/IdGenerator'
+import { TokenManager } from '../Services/TokenManager'
 
 export class UserBusiness {
 
@@ -10,10 +9,9 @@ export class UserBusiness {
         private userData: UserData,
         private tokenManager: TokenManager,
         private idGenerator: IdGenerator
-
     ){}
 
-    createUser = async (childName:string, parentName:string, age:number, birthDate:string, phoneNumber:string, email?:string) => {
+    createUser = async ( childName:string, parentName:string, age:number, birthDate:string, phoneNumber:string, email?:string ) => {
         try {
             if(!childName){
                 throw new CustomError(400, 'Insira o nome da criança')
@@ -36,7 +34,7 @@ export class UserBusiness {
             }
 
             const id: string = this.idGenerator.generate()
-            const token = this.tokenManager.generate({id: id})
+            const token = this.tokenManager.generate({ id: id })
 
         
             await this.userData.createUser(
@@ -53,7 +51,7 @@ export class UserBusiness {
 
             } catch (error:any) {
                 if (error instanceof CustomError) {
-				throw new CustomError(error.statusCode, error.message);
+				throw new CustomError(error.statusCode, error.message)
 			} else {
 				throw new Error(error.message)
 			}
@@ -61,23 +59,44 @@ export class UserBusiness {
     }
 
 
-    getUsers = async (word:any) => {
+    getAllUsers = async () => {
         try {
-            const res = await this.userData.getUsers(word)
+            const users = await this.userData.getAllUsers()
+
+            return users 
+ 
+            
+        } catch (error:any) {
+            if (error instanceof CustomError) {
+				throw new CustomError(error.statusCode, error.message)
+			} else {
+				throw new Error(error.message)
+			}
+        }
+    }
+
+
+    searchUsers = async (word:any) => {
+        try {
+            const res = await this.userData.searchUsers(word)
 
             return res
             
         } catch (error:any) {
             if (error instanceof CustomError) {
-				throw new CustomError(error.statusCode, error.message);
+				throw new CustomError(error.statusCode, error.message)
 			} else {
-				throw new Error(error.message);
+				throw new Error(error.message)
 			} 
         }
     }
 
-    editUser = async (token: string, childName:string, parentName:string, age:number, birthDate:string, phoneNumber:string, email?:string) => {
+    editUser = async ( id: string, childName:string, parentName:string, age:number, birthDate:string, phoneNumber:string, email?:string ) => {
         try {
+            if(!id){
+                throw new CustomError(400, 'Insira um id')
+            }
+
             if(!childName){
                 throw new CustomError(400, 'Insira o nome da criança')
             }
@@ -99,9 +118,7 @@ export class UserBusiness {
             }
 
 
-            const { id } = this.tokenManager.getTokenData(token)
-
-            await this.userData.editeUser(
+            const result = await this.userData.editUser(
                 id,
                 childName,
                 parentName,
@@ -110,12 +127,63 @@ export class UserBusiness {
                 phoneNumber,
                 email
             )
+
+            if(!result){
+                throw new CustomError(404, 'Usuário não encontrado')
+            }
+
+            return result
+
             
         } catch (error:any) {
             if (error instanceof CustomError) {
-				throw new CustomError(error.statusCode, error.message);
+				throw new CustomError(error.statusCode, error.message)
 			} else {
-				throw new Error(error.message);
+				throw new Error(error.message)
+			} 
+        }
+    }
+
+
+    deleteUser = async (id: string) => {
+        try {
+            if(!id){
+                throw new CustomError(400, 'Insira um id')
+            }
+
+            const user = await this.userData.getUserById(id)
+
+            if(!user){
+                throw new CustomError(400, 'id inválido')
+            }
+
+            await this.userData.deleteUser(id)
+            
+        } catch (error:any) {
+            if (error instanceof CustomError) {
+				throw new CustomError(error.statusCode, error.message)
+			} else {
+				throw new Error(error.message)
+			} 
+        }
+    }
+
+
+    getUserById = async (id: string) => {
+        try {
+            if(!id){
+                throw new CustomError(400, 'Insira um id')
+            }
+
+            const response = await this.userData.getUserById(id)
+
+            return response
+            
+        } catch (error:any) {
+            if (error instanceof CustomError) {
+				throw new CustomError(error.statusCode, error.message)
+			} else {
+				throw new Error(error.message)
 			} 
         }
     }

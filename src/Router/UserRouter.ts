@@ -20,4 +20,11 @@ export const userRouter: Router = express.Router()
 //Routes
 
 userRouter.post('/createUser', userController.createUser)
-userRouter.get('/getUsers', userController.getUser)
+
+userRouter.get('/searchUsers', userController.searchUsers)
+userRouter.get('/getUserById/:id', userController.getUserById)
+userRouter.get('/getAllUsers', userController.getAllUsers)
+
+userRouter.put('/editUser/:id', userController.editUser)
+
+userRouter.delete('/deleteUser/:id', userController.deleteUser)

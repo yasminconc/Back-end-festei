@@ -1,7 +1,7 @@
 import { prisma } from '../../baseDataBase'
 
 export class UserData {
-	createUser = async ( id: string, childName: string, parentName: string, age: number, birthDate: string, phoneNumber: string, email?: string) => {
+	createUser = async ( id: string, childName: string, parentName: string, age: number, birthDate: string, phoneNumber: string, email?: string ) => {
 		try {
 			await prisma.user.create({
 				data: {
@@ -14,12 +14,24 @@ export class UserData {
 					phoneNumber
 				}
 			})
+
 		} catch (error: any) {
 			throw new Error(error.message)
 		}
 	}
 
-	getUsers = async (word: any) => {
+	getAllUsers = async () => {
+		try {
+			const users = await prisma.user.findMany()
+
+			return users
+			
+		} catch (error:any) {
+			throw new Error(error.message)
+		}
+	}
+
+	searchUsers = async ( word: any ) => {
 		try {
 			const result = await prisma.user.findMany({
 				where: {
@@ -30,21 +42,21 @@ export class UserData {
 						{ email: { contains: word, mode: 'insensitive' } },
 						...(isNaN(Number(word)) ? [] : [{ age: { equals: Number(word) } }]),
 						...(isNaN(Date.parse(word)) ? [] : [{ birthDate: { equals: new Date(word) } }])
-					]
+					]   
 				}
 			})
 
 			return result
+
 		} catch (error: any) {
 			throw new Error(error.message)
 		}
 	}
 
-
-	editeUser = async (id: string, childName: string, parentName: string, age: number, birthDate: string, phoneNumber: string, email?: string) => {
+	editUser = async ( id: string, childName: string, parentName: string, age: number, birthDate: string, phoneNumber: string, email?: string ) => {
 		try {
-			await prisma.user.update({
-				where: {id},
+			const result = await prisma.user.update({
+				where: { id: id },
 				data: {
 					childName,
 					parentName,
@@ -56,6 +68,32 @@ export class UserData {
 
 			}) 
 
+			return result
+
+		} catch (error:any) {
+			throw new Error(error.message)
+		}
+	}
+
+	deleteUser = async ( id: string ) => {
+		try {
+			await prisma.user.delete({
+				where:{ id: id }
+			})
+			
+		} catch (error:any) {
+			throw new Error(error.message)
+		}
+	}
+
+	getUserById = async ( id: string ) => {
+		try {
+			const result = await prisma.user.findUnique({
+				where: { id: id }
+			})
+
+			return result
+			
 		} catch (error:any) {
 			throw new Error(error.message)
 		}

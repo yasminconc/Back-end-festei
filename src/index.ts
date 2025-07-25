@@ -9,7 +9,6 @@ app.use(express.json())
 app.use(cors())
 
 
-
 const server = app.listen(port, () => {
 	if (server) {
 		console.log(`The server is running on localhost:${port}`)
